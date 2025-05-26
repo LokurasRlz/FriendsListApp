@@ -15,10 +15,10 @@ default: &default
 
 development:
   <<: *default
-  database: matias_development
-  username: postgres
-  password: postgres
-  host: localhost
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
 
 test:
   <<: *default
