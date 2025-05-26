@@ -16,6 +16,10 @@ Rails.application.configure do
 
   # Enable server timing
   config.server_timing = true
+  Rails.application.config.hosts << "sptools.sa-east-1.elasticbeanstalk.com"
+  Rails.application.config.hosts << "spesrltools.com"
+  Rails.application.config.hosts << "www.spesrltools.com"
+
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
@@ -69,5 +73,5 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-  
+
 end
