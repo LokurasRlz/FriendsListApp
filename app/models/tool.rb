@@ -15,7 +15,7 @@ class Tool < ApplicationRecord
 	attribute :box, :string
 	attribute :link_to_pdf, :string
 	
-	before_save :set_date_due_to 
+	before_save :set_date_due_to, if: :should_set_date_due_to?
 
 	def can_update_date_of_use?
 		true
@@ -28,6 +28,10 @@ class Tool < ApplicationRecord
 	  end
   
 	private
+
+	def should_set_date_due_to?
+	  date_of_use.present? && will_save_change_to_date_of_use? && !will_save_change_to_date_due_to?
+	end
   
 	def set_date_due_to
 	  self.date_due_to = (date_of_use + 6.months) if date_of_use.present?

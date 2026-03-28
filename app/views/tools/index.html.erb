@@ -1,15 +1,29 @@
 <p style="color: green"></p>
 
 <% if user_signed_in? %>
+  <% next_due_sort = params[:sort_due_to] == 'desc' ? 'asc' : 'desc' %>
+  <% due_sort_icon = params[:sort_due_to] == 'desc' ? '↓' : '↑' %>
+  <% due_sort_label = params[:sort_due_to] == 'desc' ? 'Ascendente' : 'Descendente' %>
 
   <%= form_tag(tools_path, method: :get, class: "form-inline mb-3") do %>
     <div class="form-group mr-2">
       <%= text_field_tag :search, params[:search], class: "form-control", placeholder: "Search..." %>
-    </div> </br>
+    </div>
+    <% if params[:due_soon].present? %>
+      <%= hidden_field_tag :due_soon, params[:due_soon] %>
+    <% end %>
+    <% if params[:sort_due_to].present? %>
+      <%= hidden_field_tag :sort_due_to, params[:sort_due_to] %>
+    <% end %>
+    </br>
     <%= submit_tag "Search", class: "btn btn-outline-primary " %>
   <% end %>
 
   <%= link_to "Show Used Tools", used_tools_tools_path, class: "btn btn-outline-success mb-3" %>
+  <%= link_to "Vencen en 7 Dias", tools_path(search: params[:search], due_soon: true), class: "btn btn-outline-warning mb-3" %>
+  <% if params[:due_soon].present? || params[:search].present? || params[:sort_due_to].present? %>
+    <%= link_to "Limpiar Filtros", tools_path, class: "btn btn-outline-secondary mb-3" %>
+  <% end %>
 
   <table class="table table-striped table-bordered table-hover mt-3">
     <thead class="table-dark">
@@ -17,6 +31,16 @@
         <th>ID Tool</th>
         <th>Precinto</th>
         <th>Tipo</th>
+        <th>Ultimo Uso</th>
+        <th>
+          <span class="me-1">Vencimiento</span>
+          <%= link_to tools_path(search: params[:search], due_soon: params[:due_soon], sort_due_to: next_due_sort),
+                      class: "text-white text-decoration-none",
+                      title: "Ordenar #{due_sort_label.downcase}" do %>
+            <span aria-hidden="true"><%= due_sort_icon %></span>
+            <span class="visually-hidden">Ordenar <%= due_sort_label.downcase %></span>
+          <% end %>
+        </th>
         <th>Detalles</th>
       </tr>
     </thead>
@@ -31,6 +55,8 @@
 
             <td><%= tool.precinto %></td>
             <td><%= tool.clase %></td>
+            <td><%= tool.date_of_use %></td>
+            <td><%= tool.date_due_to %></td>
             <td>
               <button
                 type="button"

@@ -5,11 +5,22 @@ class ToolsController < ApplicationController
 
   # GET /tools or /tools.json
   def index
+    @tools = Tool.all
+
     if params[:search]
       search_term = "%#{params[:search]}%"
-      @tools = Tool.where("id_tool ILIKE ? OR precinto ILIKE ? OR clase ILIKE ?", search_term, search_term, search_term)
-    else
-      @tools = Tool.all
+      @tools = @tools.where("id_tool ILIKE ? OR precinto ILIKE ? OR clase ILIKE ?", search_term, search_term, search_term)
+    end
+
+    if params[:due_soon].present?
+      @tools = @tools.where(date_due_to: Date.current..7.days.from_now.to_date)
+    end
+
+    case params[:sort_due_to]
+    when 'desc'
+      @tools = @tools.order(date_due_to: :desc)
+    when 'asc'
+      @tools = @tools.order(date_due_to: :asc)
     end
   end
 
@@ -121,8 +132,11 @@ end
 
   # Only allow a list of trusted parameters through.
   def tool_params
-    # Ensure date_of_use is set to nil if it's an empty string
+    # Ensure date fields are set to nil if they are submitted blank
     params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box , :date_of_use, :date_due_to, :days_left, :state)
-          .tap { |whitelisted| whitelisted[:date_of_use] = nil if whitelisted[:date_of_use].blank? }
+          .tap do |whitelisted|
+            whitelisted[:date_of_use] = nil if whitelisted[:date_of_use].blank?
+            whitelisted[:date_due_to] = nil if whitelisted[:date_due_to].blank?
+          end
   end
 end
