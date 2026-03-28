@@ -2,6 +2,7 @@
 
 class Tool < ApplicationRecord
 	belongs_to :user
+	has_many :events
 	
 	# Add the attributes
 	attribute :id_tool, :string

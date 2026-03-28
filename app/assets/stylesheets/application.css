@@ -47,3 +47,14 @@
 .tool-qr-link {
   text-decoration: none;
 }
+
+.tool-events .list-group-item {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+.tool-events .btn-outline-light:hover,
+.tool-events .btn-outline-light:focus {
+  color: #111;
+}

@@ -54,6 +54,7 @@ class ToolsController < ApplicationController
 
     respond_to do |format|
       if @tool.save
+        log_tool_event(@tool, "Se creo el item #{@tool.id_tool}. #{format_event_date(Time.current)} por #{event_actor_name}.")
         format.html { redirect_to tool_url(@tool), notice: 'Tool was successfully created.' }
         format.json { render :show, status: :created, location: @tool }
       else
@@ -67,6 +68,7 @@ class ToolsController < ApplicationController
   def update
     respond_to do |format|
       if @tool.update(tool_params)
+        log_tool_changes(@tool)
         format.html { redirect_to tool_url(@tool), notice: 'Tool was successfully updated.' }
         format.json { render :show, status: :ok, location: @tool }
       else
@@ -78,6 +80,7 @@ class ToolsController < ApplicationController
 
   # DELETE /tools/1 or /tools/1.json
   def destroy
+    log_tool_event(@tool, "Se borro el item #{@tool.id_tool}. #{format_event_date(Time.current)} por #{event_actor_name}.")
     @tool.destroy
 
     respond_to do |format|
@@ -94,6 +97,7 @@ class ToolsController < ApplicationController
   def reset_date_of_use
     @tool = Tool.find(params[:id])
     @tool.update(date_of_use: nil, date_due_to: nil)
+    log_tool_event(@tool, "Se borraron la fecha de uso y la fecha de vencimiento. #{format_event_date(Time.current)} por #{event_actor_name}.")
 
     respond_to do |format|
       format.html { redirect_to tool_url(@tool), notice: 'Date of use reset successfully.' }
@@ -132,6 +136,78 @@ end
     return Tool.none unless user_signed_in?
 
     current_user.tools
+  end
+
+  def log_tool_changes(tool)
+    tool.saved_changes.except(:updated_at, :created_at).each do |attribute, values|
+      from_value, to_value = values
+      next if from_value == to_value
+
+      log_tool_event(tool, build_change_message(attribute, from_value, to_value))
+    end
+  end
+
+  def build_change_message(attribute, from_value, to_value)
+    date = format_event_date(Time.current)
+    actor = event_actor_name
+
+    case attribute.to_sym
+    when :date_of_use
+      if from_value.blank? && to_value.present?
+        "Se agrego nueva fecha de uso #{format_date_value(to_value)}. #{date} por #{actor}."
+      elsif to_value.blank?
+        "Se elimino la fecha de uso que era #{format_date_value(from_value)}. #{date} por #{actor}."
+      else
+        "La fecha de uso fue cambiada de #{format_date_value(from_value)} a #{format_date_value(to_value)}. #{date} por #{actor}."
+      end
+    when :date_due_to
+      if from_value.blank? && to_value.present?
+        "Se agrego nueva fecha de vencimiento #{format_date_value(to_value)}. #{date} por #{actor}."
+      elsif to_value.blank?
+        "Se elimino la fecha de vencimiento que era #{format_date_value(from_value)}. #{date} por #{actor}."
+      else
+        "La fecha de vencimiento fue cambiada de #{format_date_value(from_value)} a #{format_date_value(to_value)}. #{date} por #{actor}."
+      end
+    when :link_to_pdf
+      "El valor de Inspeccion fue cambiado de #{format_text_value(from_value)} a #{format_text_value(to_value)}. #{date} por #{actor}."
+    else
+      "El campo #{human_attribute_name(attribute)} fue cambiado de #{format_text_value(from_value)} a #{format_text_value(to_value)}. #{date} por #{actor}."
+    end
+  end
+
+  def log_tool_event(tool, description)
+    Event.create!(
+      tool_id: tool.id,
+      tool_code: tool.id_tool,
+      user_name: event_actor_name,
+      description: description
+    )
+  end
+
+  def event_actor_name
+    current_user&.display_name || 'Sistema'
+  end
+
+  def format_event_date(value)
+    value.strftime('%d/%m/%Y')
+  end
+
+  def format_date_value(value)
+    value.present? ? value.to_date.strftime('%d/%m/%Y') : 'vacio'
+  end
+
+  def format_text_value(value)
+    value.present? ? value.to_s : 'vacio'
+  end
+
+  def human_attribute_name(attribute)
+    {
+      id_tool: 'ID',
+      precinto: 'Precinto',
+      clase: 'Clase',
+      pin: 'Pin',
+      box: 'Box'
+    }.fetch(attribute.to_sym, attribute.to_s.humanize)
   end
 
   def paginate_tools
