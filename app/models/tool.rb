@@ -1,6 +1,15 @@
 # app/models/tool.rb
 
 class Tool < ApplicationRecord
+	LOCATION_OPTIONS = [
+	  'Galpon',
+	  'Pozo',
+	  'En inspeccion',
+	  'Reparacion Interna',
+	  'Reparacion Externa',
+	  'Desechada'
+	].freeze
+
 	belongs_to :user
 	has_many :events
 	
@@ -15,6 +24,7 @@ class Tool < ApplicationRecord
 	attribute :pin, :string
 	attribute :box, :string
 	attribute :link_to_pdf, :string
+	attribute :location, :string
 	
 	before_save :set_date_due_to, if: :should_set_date_due_to?
 
@@ -27,6 +37,19 @@ class Tool < ApplicationRecord
 		set_date_due_to
 		save
 	  end
+
+	def location_option
+	  return 'Pozo' if location.to_s.start_with?('Pozo ')
+	  return location if LOCATION_OPTIONS.include?(location)
+
+	  nil
+	end
+
+	def location_detail
+	  return location.to_s.delete_prefix('Pozo ').strip if location.to_s.start_with?('Pozo ')
+
+	  ''
+	end
   
 	private
 

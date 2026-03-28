@@ -16,6 +16,10 @@ class ToolsController < ApplicationController
       @tools = @tools.where(date_due_to: Date.current..7.days.from_now.to_date)
     end
 
+    if params[:used_only].present?
+      @tools = @tools.where.not(date_of_use: nil)
+    end
+
     case params[:sort_due_to]
     when 'desc'
       @tools = @tools.order(date_due_to: :desc)
@@ -27,11 +31,7 @@ class ToolsController < ApplicationController
   end
 
   def used_tools
-    # Fetch tools that have a date of use (i.e., tools that have been used)
-    @tools = visible_tools_scope.where.not(date_of_use: nil)
-    paginate_tools
-
-    render :index  # Reuse the index view to display the filtered tools
+    redirect_to tools_path(request.query_parameters.merge(used_only: true))
   end
 
 
@@ -170,6 +170,8 @@ end
       end
     when :link_to_pdf
       "El valor de Inspeccion fue cambiado de #{format_text_value(from_value)} a #{format_text_value(to_value)}. #{date} por #{actor}."
+    when :location
+      "La ubicacion fue cambiada de #{format_text_value(from_value)} a #{format_text_value(to_value)}. #{date} por #{actor}."
     else
       "El campo #{human_attribute_name(attribute)} fue cambiado de #{format_text_value(from_value)} a #{format_text_value(to_value)}. #{date} por #{actor}."
     end
@@ -206,7 +208,8 @@ end
       precinto: 'Precinto',
       clase: 'Clase',
       pin: 'Pin',
-      box: 'Box'
+      box: 'Box',
+      location: 'Ubicacion'
     }.fetch(attribute.to_sym, attribute.to_s.humanize)
   end
 
@@ -230,10 +233,23 @@ end
   # Only allow a list of trusted parameters through.
   def tool_params
     # Ensure date fields are set to nil if they are submitted blank
-    params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box , :date_of_use, :date_due_to, :days_left, :state)
+    params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box, :location, :location_option, :location_detail, :date_of_use, :date_due_to, :days_left, :state)
           .tap do |whitelisted|
             whitelisted[:date_of_use] = nil if whitelisted[:date_of_use].blank?
             whitelisted[:date_due_to] = nil if whitelisted[:date_due_to].blank?
+            whitelisted[:location] = build_location_value(whitelisted.delete(:location_option), whitelisted.delete(:location_detail), whitelisted[:location])
           end
+  end
+
+  def build_location_value(location_option, location_detail, current_location)
+    option = location_option.to_s.strip
+    detail = location_detail.to_s.strip
+
+    return current_location if option.blank?
+    return current_location if option == 'Pozo' && detail.blank? && current_location.present? && current_location.start_with?('Pozo ')
+    return 'Pozo' if option == 'Pozo' && detail.blank?
+    return "Pozo #{detail}".strip if option == 'Pozo' && detail.present?
+
+    option
   end
 end

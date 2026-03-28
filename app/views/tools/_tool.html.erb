@@ -32,6 +32,27 @@
                   </div>
                   <br/>
 
+                  <div class="form-group">
+                    <%= label_tag "tool_location_option_#{tool.id}", "Actualizar Ubicacion:" %>
+                    <%= select_tag "tool[location_option]",
+                                   options_for_select(Tool::LOCATION_OPTIONS, tool.location_option),
+                                   include_blank: "Seleccionar ubicacion",
+                                   id: "tool_location_option_#{tool.id}",
+                                   class: "form-control js-location-option",
+                                   data: { location_detail_target: "tool_location_detail_#{tool.id}" } %>
+                  </div>
+                  <br/>
+
+                  <div class="form-group <%= 'd-none' unless tool.location_option == 'Pozo' %>" id="tool_location_detail_wrapper_<%= tool.id %>">
+                    <%= label_tag "tool_location_detail_#{tool.id}", "Detalle de Pozo:" %>
+                    <%= text_field_tag "tool[location_detail]",
+                                       tool.location_detail,
+                                       id: "tool_location_detail_#{tool.id}",
+                                       class: "form-control js-location-detail",
+                                       placeholder: "Ejemplo: Pozo Norte" %>
+                  </div>
+                  <br class="<%= 'd-none' unless tool.location_option == 'Pozo' %>" id="tool_location_detail_spacer_<%= tool.id %>"/>
+
                   <%= form.submit "Actualizar", class: "btn btn-primary" %>
                 <% end %>
 
@@ -42,6 +63,7 @@
             <% end %>
 
             <br/>
+            Ubicacion: <%= tool.location %> <br/>
             Fecha de Uso: <%= tool.date_of_use %> <br/>
             Fecha de Vencimiento: <%= tool.date_due_to %> <br/>
           </div>
