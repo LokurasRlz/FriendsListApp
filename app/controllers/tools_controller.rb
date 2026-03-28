@@ -1,7 +1,7 @@
 class ToolsController < ApplicationController
   before_action :set_tool, only: %i[show edit update destroy reset_date_of_use reset_date_of_use]
   before_action :authenticate_user!, except: %i[show index update show reset_date_of_use update_date_of_use]
- 
+
 
   # GET /tools or /tools.json
   def index
@@ -16,7 +16,7 @@ class ToolsController < ApplicationController
   def used_tools
     # Fetch tools that have a date of use (i.e., tools that have been used)
     @tools = Tool.where.not(date_of_use: nil)
-    
+
     render :index  # Reuse the index view to display the filtered tools
   end
 
@@ -99,7 +99,7 @@ class ToolsController < ApplicationController
         # Handle update errors
       end
     end
-  
+
 
   def correct_user
     @tool = Tool.find(params[:id])
@@ -107,7 +107,7 @@ class ToolsController < ApplicationController
       redirect_to tools_path, notice: 'Not Authorized'
     end
   end
-   
+
 
 end
 
@@ -116,7 +116,6 @@ end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_tool
-    byebug
     @tool = Tool.find(params[:id])
   end
 
