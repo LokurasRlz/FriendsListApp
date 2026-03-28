@@ -32,14 +32,46 @@
             <td><%= tool.precinto %></td>
             <td><%= tool.clase %></td>
             <td>
-              <%= link_to 'Detalles', tool, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-outline-info btn-sm" %>
+              <button
+                type="button"
+                class="btn btn-outline-info btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#toolDetailsModal-<%= tool.id %>">
+                Detalles
+              </button>
             </td>
           </tr>
+
         <% end %>
       <% end %>
       
     </tbody>
   </table>
+
+  <% @tools.each do |tool| %>
+    <% if tool.user == current_user %>
+      <div
+        class="modal fade tool-details-modal"
+        id="toolDetailsModal-<%= tool.id %>"
+        tabindex="-1"
+        aria-labelledby="toolDetailsModalLabel-<%= tool.id %>"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="toolDetailsModalLabel-<%= tool.id %>">
+                Detalles de <%= tool.id_tool %>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <%= render partial: "tool", locals: { tool: tool, modal: true } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
 
   <br>
 
@@ -55,5 +87,3 @@
   <h1 class="mt-5 text-center">Hola! Por favor ingresar</h1>
 
 <% end %>
-
-
