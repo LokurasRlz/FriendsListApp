@@ -24,6 +24,10 @@
     <%= submit_tag "Search", class: "btn btn-outline-primary " %>
   <% end %>
 
+  <%= link_to new_tool_path, class: "btn btn-success tool-add-button mb-3" do %>
+    <span class="tool-add-button__icon" aria-hidden="true">+</span>
+    <span>Agregar</span>
+  <% end %>
   <%= link_to "Show Used Tools", tools_path(search: params[:search], due_soon: params[:due_soon], used_only: true, sort_due_to: params[:sort_due_to]), class: "btn btn-outline-success mb-3" %>
   <%= link_to "Vencen en 7 Dias", tools_path(search: params[:search], due_soon: true, used_only: params[:used_only], sort_due_to: params[:sort_due_to]), class: "btn btn-outline-warning mb-3" %>
   <% if params[:due_soon].present? || params[:used_only].present? || params[:search].present? || params[:sort_due_to].present? %>
@@ -156,10 +160,6 @@
       });
     });
   <% end %>
-
-  <br>
-
-  <%= link_to "Agregar", new_tool_path, class: "btn btn-secondary" %>
 
   <br/>
   <br/>

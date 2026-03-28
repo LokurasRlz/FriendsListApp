@@ -68,3 +68,20 @@
   color: #ffc107;
   font-weight: 700;
 }
+
+.tool-add-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.tool-add-button__icon {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 1.35rem;
+  justify-content: center;
+  line-height: 1;
+  width: 1.35rem;
+}
