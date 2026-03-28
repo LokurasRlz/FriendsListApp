@@ -58,3 +58,13 @@
 .tool-events .btn-outline-light:focus {
   color: #111;
 }
+
+.tool-due-soon {
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.tool-due-warning {
+  color: #ffc107;
+  font-weight: 700;
+}

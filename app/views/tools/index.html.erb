@@ -58,7 +58,7 @@
             <td><%= tool.precinto %></td>
             <td><%= tool.clase %></td>
             <td><%= tool.date_of_use %></td>
-            <td><%= tool.date_due_to %></td>
+            <td class="<%= due_date_text_class(tool.date_due_to) %>"><%= tool.date_due_to %></td>
             <td>
               <button
                 type="button"
