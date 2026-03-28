@@ -6,6 +6,7 @@ ruby '3.1.3'
 gem 'devise', '~> 4.8', '>= 4.8.1'
 gem 'rails', '~> 7.0.4'
 gem 'rubocop', '>= 1.0', '< 2.0'
+gem 'rqrcode'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'

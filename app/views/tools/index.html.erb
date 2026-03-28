@@ -62,9 +62,10 @@
             <td>
               <button
                 type="button"
-                class="btn btn-outline-info btn-sm"
+                class="btn btn-outline-info btn-sm js-tool-modal-trigger"
                 data-bs-toggle="modal"
-                data-bs-target="#toolDetailsModal-<%= tool.id %>">
+                data-bs-target="#toolDetailsModal-<%= tool.id %>"
+                data-tool-modal-id="toolDetailsModal-<%= tool.id %>">
                 Detalles
               </button>
             </td>
@@ -129,6 +130,26 @@
         </div>
       </div>
     <% end %>
+  <% end %>
+
+  <%= javascript_tag do %>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.js-tool-modal-trigger').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var modalId = button.dataset.toolModalId;
+          var modalElement = document.getElementById(modalId);
+
+          if (!modalElement || typeof bootstrap === 'undefined') {
+            return;
+          }
+
+          bootstrap.Modal.getOrCreateInstance(modalElement, {
+            backdrop: true,
+            keyboard: true
+          }).show();
+        });
+      });
+    });
   <% end %>
 
   <br>
