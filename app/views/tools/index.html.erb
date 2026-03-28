@@ -4,6 +4,8 @@
   <% next_due_sort = params[:sort_due_to] == 'desc' ? 'asc' : 'desc' %>
   <% due_sort_icon = params[:sort_due_to] == 'desc' ? '↓' : '↑' %>
   <% due_sort_label = params[:sort_due_to] == 'desc' ? 'Ascendente' : 'Descendente' %>
+  <% pagination_params = request.query_parameters.except(:page) %>
+  <% pagination_path = request.path %>
 
   <%= form_tag(tools_path, method: :get, class: "form-inline mb-3") do %>
     <div class="form-group mr-2">
@@ -73,6 +75,34 @@
       
     </tbody>
   </table>
+
+  <% if @total_pages > 1 %>
+    <nav aria-label="Tools pagination" class="mt-4">
+      <ul class="pagination justify-content-center flex-wrap">
+        <li class="page-item <%= 'disabled' if @current_page == 1 %>">
+          <% if @current_page == 1 %>
+            <span class="page-link">Anterior</span>
+          <% else %>
+            <%= link_to "Anterior", pagination_path + "?" + pagination_params.merge(page: @current_page - 1).to_query, class: "page-link" %>
+          <% end %>
+        </li>
+
+        <% (1..@total_pages).each do |page| %>
+          <li class="page-item <%= 'active' if page == @current_page %>">
+            <%= link_to page, pagination_path + "?" + pagination_params.merge(page: page).to_query, class: "page-link" %>
+          </li>
+        <% end %>
+
+        <li class="page-item <%= 'disabled' if @current_page == @total_pages %>">
+          <% if @current_page == @total_pages %>
+            <span class="page-link">Siguiente</span>
+          <% else %>
+            <%= link_to "Siguiente", pagination_path + "?" + pagination_params.merge(page: @current_page + 1).to_query, class: "page-link" %>
+          <% end %>
+        </li>
+      </ul>
+    </nav>
+  <% end %>
 
   <% @tools.each do |tool| %>
     <% if tool.user == current_user %>

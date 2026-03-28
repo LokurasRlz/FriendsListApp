@@ -5,7 +5,7 @@ class ToolsController < ApplicationController
 
   # GET /tools or /tools.json
   def index
-    @tools = Tool.all
+    @tools = visible_tools_scope
 
     if params[:search]
       search_term = "%#{params[:search]}%"
@@ -22,11 +22,14 @@ class ToolsController < ApplicationController
     when 'asc'
       @tools = @tools.order(date_due_to: :asc)
     end
+
+    paginate_tools
   end
 
   def used_tools
     # Fetch tools that have a date of use (i.e., tools that have been used)
-    @tools = Tool.where.not(date_of_use: nil)
+    @tools = visible_tools_scope.where.not(date_of_use: nil)
+    paginate_tools
 
     render :index  # Reuse the index view to display the filtered tools
   end
@@ -124,6 +127,24 @@ end
 
 
   private
+
+  def visible_tools_scope
+    return Tool.none unless user_signed_in?
+
+    current_user.tools
+  end
+
+  def paginate_tools
+    @per_page = 50
+    @current_page = [params.fetch(:page, 1).to_i, 1].max
+    @total_tools = @tools.count
+    @total_pages = [(@total_tools.to_f / @per_page).ceil, 1].max
+
+    @current_page = @total_pages if @current_page > @total_pages
+
+    offset = (@current_page - 1) * @per_page
+    @tools = @tools.offset(offset).limit(@per_page)
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_tool
