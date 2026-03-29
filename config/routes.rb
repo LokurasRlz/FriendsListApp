@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   resources :tools do
     member do
       patch 'update_date_of_use'
-          end
+    end
   end
 
   resources :tools do
