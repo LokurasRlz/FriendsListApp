@@ -177,8 +177,7 @@ class ToolsController < ApplicationController
 
     unless event.persisted?
       Rails.logger.warn(
-        "Failed to log tool event for tool #{tool.id} (code: #{tool.id_tool}): " \
-        event.errors.full_messages.join(', ')
+        "Failed to log tool event for tool #{tool.id} (code: #{tool.id_tool}): #{event.errors.full_messages.join(', ')}"
       )
     end
   end

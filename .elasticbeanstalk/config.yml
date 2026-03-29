@@ -1,0 +1,19 @@
+branch-defaults:
+  Actualizacion:
+    environment: Main-env
+environment-defaults:
+  Main-env:
+    branch: null
+    repository: null
+global:
+  application_name: main
+  default_ec2_keyname: ssh-maati-2025
+  default_platform: Docker running on 64bit Amazon Linux 2023
+  default_region: sa-east-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: matias
+  sc: git
+  workspace_type: Application
