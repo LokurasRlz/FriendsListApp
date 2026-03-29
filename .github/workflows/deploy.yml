@@ -27,6 +27,17 @@ jobs:
         run: |
           python3 -m pip install awsebcli
 
+      - name: Remove local Elastic Beanstalk profile in CI
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          config_path = Path(".elasticbeanstalk/config.yml")
+          lines = config_path.read_text().splitlines()
+          filtered_lines = [line for line in lines if line.strip() != "profile: matias"]
+          config_path.write_text("\n".join(filtered_lines) + "\n")
+          PY
+
       - name: Deploy new version to EB
         run: |
           eb deploy Main-env --staged --timeout 20
