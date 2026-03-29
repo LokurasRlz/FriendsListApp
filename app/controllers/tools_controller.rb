@@ -168,12 +168,19 @@ class ToolsController < ApplicationController
   end
 
   def log_tool_event(tool, description)
-    Event.create!(
+    event = Event.create(
       tool_id: tool.id,
       tool_code: tool.id_tool,
       user_name: event_actor_name,
       description: description
     )
+
+    unless event.persisted?
+      Rails.logger.warn(
+        "Failed to log tool event for tool #{tool.id} (code: #{tool.id_tool}): " \
+        event.errors.full_messages.join(', ')
+      )
+    end
   end
 
   def event_actor_name
