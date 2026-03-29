@@ -233,11 +233,12 @@ end
   # Only allow a list of trusted parameters through.
   def tool_params
     # Ensure date fields are set to nil if they are submitted blank
-    params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box, :location, :location_option, :location_detail, :date_of_use, :date_due_to, :days_left, :state)
+    params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box, :location_option, :location_detail, :date_of_use, :date_due_to, :days_left, :state)
           .tap do |whitelisted|
             whitelisted[:date_of_use] = nil if whitelisted[:date_of_use].blank?
             whitelisted[:date_due_to] = nil if whitelisted[:date_due_to].blank?
-            whitelisted[:location] = build_location_value(whitelisted.delete(:location_option), whitelisted.delete(:location_detail), whitelisted[:location])
+            current_location = @tool&.location
+            whitelisted[:location] = build_location_value(whitelisted.delete(:location_option), whitelisted.delete(:location_detail), current_location)
           end
   end
 
