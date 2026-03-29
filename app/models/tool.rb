@@ -11,8 +11,8 @@ class Tool < ApplicationRecord
 	].freeze
 
 	belongs_to :user
-	has_many :events
-	
+	has_many :events, dependent: :nullify
+
 	# Add the attributes
 	attribute :id_tool, :string
 	attribute :precinto, :string
@@ -25,13 +25,13 @@ class Tool < ApplicationRecord
 	attribute :box, :string
 	attribute :link_to_pdf, :string
 	attribute :location, :string
-	
+
 	before_save :set_date_due_to, if: :should_set_date_due_to?
 
 	def can_update_date_of_use?
 		true
 	  end
-	
+
 	  def update_date_of_use(new_date)
 		self.date_of_use = new_date
 		set_date_due_to
@@ -50,13 +50,13 @@ class Tool < ApplicationRecord
 
 	  ''
 	end
-  
+
 	private
 
 	def should_set_date_due_to?
 	  date_of_use.present? && will_save_change_to_date_of_use? && !will_save_change_to_date_due_to?
 	end
-  
+
 	def set_date_due_to
 	  self.date_due_to = (date_of_use + 6.months) if date_of_use.present?
 	end

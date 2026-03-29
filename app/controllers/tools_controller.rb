@@ -28,6 +28,7 @@ class ToolsController < ApplicationController
     end
 
     paginate_tools
+    preload_tool_associations
   end
 
   def used_tools
@@ -219,6 +220,10 @@ class ToolsController < ApplicationController
 
     offset = (@current_page - 1) * @per_page
     @tools = @tools.offset(offset).limit(@per_page)
+  end
+
+  def preload_tool_associations
+    @tools = @tools.preload(:events)
   end
 
   # Use callbacks to share common setup or constraints between actions.
