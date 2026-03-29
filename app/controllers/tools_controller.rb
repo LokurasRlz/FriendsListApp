@@ -1,6 +1,6 @@
 class ToolsController < ApplicationController
-  before_action :set_tool, only: %i[show edit update destroy reset_date_of_use reset_date_of_use]
-  before_action :authenticate_user!, except: %i[show index update show reset_date_of_use update_date_of_use]
+  before_action :set_tool, only: %i[show edit update destroy reset_date_of_use]
+  before_action :authenticate_user!, except: %i[show index update reset_date_of_use update_date_of_use]
 
 
   # GET /tools or /tools.json
