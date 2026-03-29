@@ -13,3 +13,75 @@
  *= require_tree .
  *= require_self
  */
+
+.tool-details-modal .modal-dialog {
+  max-width: 36rem;
+}
+
+.tool-details-modal .modal-body {
+  padding: 0;
+}
+
+.tool-details-modal .card {
+  border: 0;
+  border-radius: 0.5rem;
+}
+
+.tool-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tool-actions form {
+  margin: 0;
+}
+
+.tool-qr-image {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.tool-qr-link {
+  text-decoration: none;
+}
+
+.tool-events .list-group-item {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+.tool-events .btn-outline-light:hover,
+.tool-events .btn-outline-light:focus {
+  color: #111;
+}
+
+.tool-due-soon {
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.tool-due-warning {
+  color: #ffc107;
+  font-weight: 700;
+}
+
+.tool-add-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.tool-add-button__icon {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 1.35rem;
+  justify-content: center;
+  line-height: 1;
+  width: 1.35rem;
+}

@@ -42,6 +42,27 @@
  <br/>
 
   <div class="form-group">
+    <%= label_tag "tool_location_option_form", "Ubicacion" %>
+    <%= select_tag "tool[location_option]",
+                   options_for_select(Tool::LOCATION_OPTIONS, tool.location_option),
+                   include_blank: "Seleccionar ubicacion",
+                   id: "tool_location_option_form",
+                   class: "form-control js-location-option",
+                   data: { location_detail_target: "tool_location_detail_form" } %>
+  </div>
+  <br/>
+
+  <div class="form-group <%= 'd-none' unless tool.location_option == 'Pozo' %>" id="tool_location_detail_wrapper_form">
+    <%= label_tag "tool_location_detail_form", "Detalle de Pozo" %>
+    <%= text_field_tag "tool[location_detail]",
+                       tool.location_detail,
+                       id: "tool_location_detail_form",
+                       class: "form-control js-location-detail",
+                       placeholder: "Ejemplo: Pozo Norte" %>
+  </div>
+  <br class="<%= 'd-none' unless tool.location_option == 'Pozo' %>" id="tool_location_detail_spacer_form"/>
+
+  <div class="form-group">
     <%= form.text_field :link_to_pdf, class: "form-control", placeholder: "Link Inspeccion" %>
   </div>
   <br/>
@@ -55,4 +76,3 @@
     <%= form.submit class: "btn btn-secondary" %>
   </div>
 <% end %>
-

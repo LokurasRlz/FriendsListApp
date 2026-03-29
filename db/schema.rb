@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_26_133749) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_28_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "events", force: :cascade do |t|
+    t.bigint "tool_id"
+    t.string "tool_code"
+    t.string "user_name"
+    t.text "description", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tool_id"], name: "index_events_on_tool_id"
+  end
 
   create_table "tools", force: :cascade do |t|
     t.string "id_tool"
@@ -27,6 +37,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_26_133749) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "location"
     t.index ["user_id"], name: "index_tools_on_user_id"
   end
 

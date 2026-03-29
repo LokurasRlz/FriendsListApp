@@ -1,12 +1,37 @@
 <p style="color: green"></p>
 
 <% if user_signed_in? %>
+  <% next_due_sort = params[:sort_due_to] == 'desc' ? 'asc' : 'desc' %>
+  <% due_sort_icon = params[:sort_due_to] == 'desc' ? '↓' : '↑' %>
+  <% due_sort_label = params[:sort_due_to] == 'desc' ? 'Ascendente' : 'Descendente' %>
+  <% pagination_params = request.query_parameters.except(:page) %>
+  <% pagination_path = request.path %>
 
   <%= form_tag(tools_path, method: :get, class: "form-inline mb-3") do %>
     <div class="form-group mr-2">
-      <%= text_field_tag :search, params[:search], class: "form-control", placeholder: "Search..." %>
-    </div> </br>
-    <%= submit_tag "Search", class: "btn btn-outline-primary " %>
+      <%= text_field_tag :search, params[:search], class: "form-control", placeholder: "Buscar herramientas" %>
+    </div>
+    <% if params[:due_soon].present? %>
+      <%= hidden_field_tag :due_soon, params[:due_soon] %>
+    <% end %>
+    <% if params[:used_only].present? %>
+      <%= hidden_field_tag :used_only, params[:used_only] %>
+    <% end %>
+    <% if params[:sort_due_to].present? %>
+      <%= hidden_field_tag :sort_due_to, params[:sort_due_to] %>
+    <% end %>
+    </br>
+    <%= submit_tag "Buscar", class: "btn btn-primary " %>
+  <% end %>
+
+  <%= link_to new_tool_path, class: "btn btn-success tool-add-button mb-3" do %>
+    <span class="tool-add-button__icon" aria-hidden="true">+</span>
+    <span>Agregar</span>
+  <% end %>
+  <%= link_to "Herramientas Usadas", tools_path(search: params[:search], due_soon: params[:due_soon], used_only: true, sort_due_to: params[:sort_due_to]), class: "btn btn-outline-success mb-3" %>
+  <%= link_to "Vencen en 30 Dias", tools_path(search: params[:search], due_soon: true, used_only: params[:used_only], sort_due_to: params[:sort_due_to]), class: "btn btn-outline-warning mb-3" %>
+  <% if params[:due_soon].present? || params[:used_only].present? || params[:search].present? || params[:sort_due_to].present? %>
+    <%= link_to "Limpiar Filtros", tools_path, class: "btn btn-outline-secondary mb-3" %>
   <% end %>
 
   <table class="table table-striped table-bordered table-hover mt-3">
@@ -15,6 +40,17 @@
         <th>ID Tool</th>
         <th>Precinto</th>
         <th>Tipo</th>
+        <th>Ubicacion</th>
+        <th>Ultimo Uso</th>
+        <th>
+          <span class="me-1">Vencimiento</span>
+          <%= link_to tools_path(search: params[:search], due_soon: params[:due_soon], used_only: params[:used_only], sort_due_to: next_due_sort),
+                      class: "text-white text-decoration-none",
+                      title: "Ordenar #{due_sort_label.downcase}" do %>
+            <span aria-hidden="true"><%= due_sort_icon %></span>
+            <span class="visually-hidden">Ordenar <%= due_sort_label.downcase %></span>
+          <% end %>
+        </th>
         <th>Detalles</th>
       </tr>
     </thead>
@@ -29,19 +65,101 @@
 
             <td><%= tool.precinto %></td>
             <td><%= tool.clase %></td>
+            <td><%= tool.location %></td>
+            <td><%= tool.date_of_use %></td>
+            <td class="<%= due_date_text_class(tool.date_due_to) %>"><%= tool.date_due_to %></td>
             <td>
-              <%= link_to 'Detalles', tool, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-outline-info btn-sm" %>
+              <button
+                type="button"
+                class="btn btn-outline-info btn-sm js-tool-modal-trigger"
+                data-bs-toggle="modal"
+                data-bs-target="#toolDetailsModal-<%= tool.id %>"
+                data-tool-modal-id="toolDetailsModal-<%= tool.id %>">
+                Detalles
+              </button>
             </td>
           </tr>
+
         <% end %>
       <% end %>
-      
+
     </tbody>
   </table>
 
-  <br>
+  <% if @total_pages > 1 %>
+    <nav aria-label="Tools pagination" class="mt-4">
+      <ul class="pagination justify-content-center flex-wrap">
+        <li class="page-item <%= 'disabled' if @current_page == 1 %>">
+          <% if @current_page == 1 %>
+            <span class="page-link">Anterior</span>
+          <% else %>
+            <%= link_to "Anterior", pagination_path + "?" + pagination_params.merge(page: @current_page - 1).to_query, class: "page-link" %>
+          <% end %>
+        </li>
 
-  <%= link_to "Agregar", new_tool_path, class: "btn btn-secondary" %>
+        <% (1..@total_pages).each do |page| %>
+          <li class="page-item <%= 'active' if page == @current_page %>">
+            <%= link_to page, pagination_path + "?" + pagination_params.merge(page: page).to_query, class: "page-link" %>
+          </li>
+        <% end %>
+
+        <li class="page-item <%= 'disabled' if @current_page == @total_pages %>">
+          <% if @current_page == @total_pages %>
+            <span class="page-link">Siguiente</span>
+          <% else %>
+            <%= link_to "Siguiente", pagination_path + "?" + pagination_params.merge(page: @current_page + 1).to_query, class: "page-link" %>
+          <% end %>
+        </li>
+      </ul>
+    </nav>
+  <% end %>
+
+  <% @tools.each do |tool| %>
+    <% if tool.user == current_user %>
+      <div
+        class="modal fade tool-details-modal"
+        id="toolDetailsModal-<%= tool.id %>"
+        tabindex="-1"
+        aria-labelledby="toolDetailsModalLabel-<%= tool.id %>"
+        data-bs-backdrop="true"
+        data-bs-keyboard="true"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="toolDetailsModalLabel-<%= tool.id %>">
+                Detalles de <%= tool.id_tool %>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <%= render partial: "tool", locals: { tool: tool, modal: true } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= javascript_tag do %>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.js-tool-modal-trigger').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var modalId = button.dataset.toolModalId;
+          var modalElement = document.getElementById(modalId);
+
+          if (!modalElement || typeof bootstrap === 'undefined') {
+            return;
+          }
+
+          bootstrap.Modal.getOrCreateInstance(modalElement, {
+            backdrop: true,
+            keyboard: true
+          }).show();
+        });
+      });
+    });
+  <% end %>
 
   <br/>
   <br/>
@@ -53,5 +171,3 @@
   <h1 class="mt-5 text-center">Hola! Por favor ingresar</h1>
 
 <% end %>
-
-

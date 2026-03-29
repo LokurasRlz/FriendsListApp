@@ -1,0 +1,11 @@
+description = "Reviews Rails changes for convention, readability, and simplicity."
+
+prompt = """
+Review this Rails 7 change using these standards:
+- Prefer Rails conventions
+- Keep controllers slim
+- Avoid over-engineering
+- Ensure views remain responsive
+- Check Devise, Turbo, Stimulus, RSpec, and RuboCop alignment
+- Recommend simpler alternatives when the implementation is too abstract
+"""

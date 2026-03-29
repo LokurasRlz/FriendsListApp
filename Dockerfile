@@ -1,6 +1,6 @@
-FROM ruby:3.1.2-alpine3.16
+FROM ruby:3.1.3-alpine3.16
 
-ENV RUBY_VERSION 3.1.2
+ENV RUBY_VERSION 3.1.3
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 
@@ -21,7 +21,8 @@ RUN apk --no-cache update \
 RUN ln -sf /dev/bd_logs /tmp/
 
 # Copy the files from the host to the container
-COPY Gemfile Gemfile.lock $APP_HOME
+COPY . $APP_HOME
+RUN chmod +x docker/start.sh
 
 # install the gems from the Gemfile its a separated layer to prevent rebuild the gems
 # when the code changes or the Gemfile.lock changes

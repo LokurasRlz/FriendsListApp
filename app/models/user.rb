@@ -10,5 +10,7 @@ class User < ApplicationRecord # rubocop:todo Layout/EndOfLine
     admin
   end
 
-
+  def display_name
+    admin? ? 'Admin' : email
+  end
 end
