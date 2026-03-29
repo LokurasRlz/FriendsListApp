@@ -60,4 +60,4 @@ class Tool < ApplicationRecord
 	def set_date_due_to
 	  self.date_due_to = (date_of_use + 6.months) if date_of_use.present?
 	end
-  end
+end

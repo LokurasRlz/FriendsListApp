@@ -2,14 +2,18 @@ class ToolsController < ApplicationController
   before_action :set_tool, only: %i[show edit update destroy reset_date_of_use]
   before_action :authenticate_user!, except: %i[show index update reset_date_of_use update_date_of_use]
 
-
   # GET /tools or /tools.json
   def index
     @tools = visible_tools_scope
 
-    if params[:search]
+    if params[:search].present?
       search_term = "%#{params[:search]}%"
-      @tools = @tools.where("id_tool ILIKE ? OR precinto ILIKE ? OR clase ILIKE ?", search_term, search_term, search_term)
+      @tools = @tools.where(
+        "id_tool ILIKE ? OR precinto ILIKE ? OR clase ILIKE ?",
+        search_term,
+        search_term,
+        search_term
+      )
     end
 
     if params[:due_soon].present?
@@ -35,10 +39,8 @@ class ToolsController < ApplicationController
     redirect_to tools_path(request.query_parameters.merge(used_only: true))
   end
 
-
   # GET /tools/1 or /tools/1.json
-  def show
-  end
+  def show; end
 
   # GET /tools/new
   def new
@@ -46,8 +48,7 @@ class ToolsController < ApplicationController
   end
 
   # GET /tools/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /tools or /tools.json
   def create
@@ -108,27 +109,19 @@ class ToolsController < ApplicationController
 
   def update_date_of_use
     @tool = Tool.find(params[:id])
+
     if params[:reset_date_of_use]
       @tool.update(date_of_use: nil, date_due_to: nil)
       redirect_to tool_url(@tool), notice: 'Date of use reset successfully.'
+    elsif @tool.can_update_date_of_use? && @tool.update(tool_params)
+      redirect_to tool_url(@tool), notice: 'La herrameinta fue actualizada.'
     else
-      if @tool.can_update_date_of_use? && @tool.update(tool_params)
-        redirect_to tool_url(@tool), notice: 'Tool was successfully updated.'
-      else
-        # Handle update errors
-      end
-    end
-
-
-  def correct_user
-    @tool = Tool.find(params[:id])
-    unless current_user.admin? || @tool.user == current_user
-      redirect_to tools_path, notice: 'Not Authorized'
+      redirect_to tool_url(@tool), alert: 'No se pudo actualizar la herramienta.'
     end
   end
 
-
   private
+
   def visible_tools_scope
     return Tool.none unless user_signed_in?
 
@@ -226,20 +219,36 @@ class ToolsController < ApplicationController
     @tools = @tools.preload(:events)
   end
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_tool
     @tool = Tool.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
   def tool_params
-    # Ensure date fields are set to nil if they are submitted blank
-    params.require(:tool).permit(:id_tool, :precinto, :link_to_pdf, :clase, :pin, :box, :location_option, :location_detail, :date_of_use, :date_due_to, :days_left, :state)
+    params.require(:tool)
+          .permit(
+            :id_tool,
+            :precinto,
+            :link_to_pdf,
+            :clase,
+            :pin,
+            :box,
+            :location_option,
+            :location_detail,
+            :date_of_use,
+            :date_due_to,
+            :days_left,
+            :state
+          )
           .tap do |whitelisted|
             whitelisted[:date_of_use] = nil if whitelisted[:date_of_use].blank?
             whitelisted[:date_due_to] = nil if whitelisted[:date_due_to].blank?
+
             current_location = @tool&.location
-            whitelisted[:location] = build_location_value(whitelisted.delete(:location_option), whitelisted.delete(:location_detail), current_location)
+            whitelisted[:location] = build_location_value(
+              whitelisted.delete(:location_option),
+              whitelisted.delete(:location_detail),
+              current_location
+            )
           end
   end
 
