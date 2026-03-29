@@ -10,5 +10,6 @@ class CreateEvents < ActiveRecord::Migration[7.0]
     end
 
     add_index :events, :tool_id
+    add_foreign_key :events, :tools, column: :tool_id
   end
 end

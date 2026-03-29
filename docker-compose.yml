@@ -38,7 +38,6 @@ services:
       - matias-network
 
 volumes:
-  db-data:
   gem-cache:
   public-assets:
 
