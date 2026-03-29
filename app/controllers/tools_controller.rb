@@ -127,11 +127,7 @@ class ToolsController < ApplicationController
   end
 
 
-end
-
-
   private
-
   def visible_tools_scope
     return Tool.none unless user_signed_in?
 
