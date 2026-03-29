@@ -25,6 +25,7 @@ RUN gem install rails
 
 # Copy the files from the host to the container
 COPY . $APP_HOME
+RUN chmod +x docker/start.sh
 
 # install the gems from the Gemfile its a separated layer to prevent rebuild the gems
 # when the code changes or the Gemfile.lock changes
