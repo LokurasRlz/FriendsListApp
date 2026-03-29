@@ -30,7 +30,7 @@ COPY . $APP_HOME
 RUN bundle install
 
 # Precompile the assets
-RUN bundle exec rake assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rake assets:precompile
 
 # Ensure Rails serves static files
 ENV RAILS_SERVE_STATIC_FILES=true
