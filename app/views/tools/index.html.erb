@@ -9,7 +9,7 @@
 
   <%= form_tag(tools_path, method: :get, class: "form-inline mb-3") do %>
     <div class="form-group mr-2">
-      <%= text_field_tag :search, params[:search], class: "form-control", placeholder: "Search..." %>
+      <%= text_field_tag :search, params[:search], class: "form-control", placeholder: "Buscar herramientas" %>
     </div>
     <% if params[:due_soon].present? %>
       <%= hidden_field_tag :due_soon, params[:due_soon] %>
@@ -21,15 +21,15 @@
       <%= hidden_field_tag :sort_due_to, params[:sort_due_to] %>
     <% end %>
     </br>
-    <%= submit_tag "Search", class: "btn btn-outline-primary " %>
+    <%= submit_tag "Buscar", class: "btn btn-primary " %>
   <% end %>
 
   <%= link_to new_tool_path, class: "btn btn-success tool-add-button mb-3" do %>
     <span class="tool-add-button__icon" aria-hidden="true">+</span>
     <span>Agregar</span>
   <% end %>
-  <%= link_to "Show Used Tools", tools_path(search: params[:search], due_soon: params[:due_soon], used_only: true, sort_due_to: params[:sort_due_to]), class: "btn btn-outline-success mb-3" %>
-  <%= link_to "Vencen en 7 Dias", tools_path(search: params[:search], due_soon: true, used_only: params[:used_only], sort_due_to: params[:sort_due_to]), class: "btn btn-outline-warning mb-3" %>
+  <%= link_to "Herramientas Usadas", tools_path(search: params[:search], due_soon: params[:due_soon], used_only: true, sort_due_to: params[:sort_due_to]), class: "btn btn-outline-success mb-3" %>
+  <%= link_to "Vencen en 30 Dias", tools_path(search: params[:search], due_soon: true, used_only: params[:used_only], sort_due_to: params[:sort_due_to]), class: "btn btn-outline-warning mb-3" %>
   <% if params[:due_soon].present? || params[:used_only].present? || params[:search].present? || params[:sort_due_to].present? %>
     <%= link_to "Limpiar Filtros", tools_path, class: "btn btn-outline-secondary mb-3" %>
   <% end %>
@@ -82,7 +82,7 @@
 
         <% end %>
       <% end %>
-      
+
     </tbody>
   </table>
 

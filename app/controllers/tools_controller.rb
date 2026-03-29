@@ -13,7 +13,7 @@ class ToolsController < ApplicationController
     end
 
     if params[:due_soon].present?
-      @tools = @tools.where(date_due_to: Date.current..7.days.from_now.to_date)
+      @tools = @tools.where(date_due_to: Date.current..30.days.from_now.to_date)
     end
 
     if params[:used_only].present?
